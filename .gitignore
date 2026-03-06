@@ -4,3 +4,5 @@ chroma_db/
 !data/.gitkeep
 __pycache__/
 *.pyc
+old/
+.vscode
