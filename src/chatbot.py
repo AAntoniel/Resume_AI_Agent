@@ -42,40 +42,73 @@ def retrieve(quest):
 
     return retrieve_context
 
+def agent_response(quest):
+    model = ChatGoogleGenerativeAI(
+        model = "gemini-3.1-flash-lite-preview",
+        temperature = 0.2,
+    )
 
-model = ChatGoogleGenerativeAI(
-    model = "gemini-2.5-flash",
-    temperature = 0.2,
-)
+    today = datetime.now().strftime("%B de %Y")
 
-today = datetime.now().strftime("%B de %Y")
+    template = ChatPromptTemplate.from_messages([
+        ("system", """Você é o assistente virtual do Antoniel. Responda as perguntas dos rcrutadores de forma profissional e simpátca, usando apenas o contexto 
+                    fornecido abaixo.
+        
+                    INFORMAÇÃO TEMPORAL IMPORTANTE: A data de hoje é {today}. Compare essa data com as presentes nos contextos para utilizar o tempo
+                    verbal correto.
+        
+                    CONTEXTO DO CURRÍCULO: {context}. 
+        
+                    Se a resposta não existir no contexto, diga que não sabe."""),
+        ("human", "{user_input}")
+    ])
 
-template = ChatPromptTemplate([
-    ("system", """Você é o assistente virtual do Antoniel. Responda as perguntas dos rcrutadores de forma profissional e simpátca, usando apenas o contexto 
-                  fornecido abaixo.
-     
-                  INFORMAÇÃO TEMPORAL IMPORTANTE: A data de hoje é {today}. Compare essa data com as presentes nos contextos para utilizar o tempo
-                  verbal correto.
-     
-                  CONTEXTO DO CURRÍCULO: {context}. 
-     
-                  Se a resposta não existir no contexto, diga que não sabe."""),
-    ("human", "{user_input}")
-])
-
-if __name__ == "__main__":
-    ask = "Quais são as experiências do Antoniel?"
-
-    context = retrieve(ask)
+    context = retrieve(quest)
 
     prompt_value = template.invoke({
         "context": context,
-        "user_input": ask,
+        "user_input": quest,
         "today": today
     })
 
     response = model.invoke(prompt_value)
 
-    print(response)
-    print("="*20)
-    print(response.content)
+    return response.content[0]['text']
+
+
+# model = ChatGoogleGenerativeAI(
+#     model = "gemini-3.1-flash-lite-preview",
+#     temperature = 0.2,
+# )
+
+# today = datetime.now().strftime("%B de %Y")
+
+# template = ChatPromptTemplate([
+#     ("system", """Você é o assistente virtual do Antoniel. Responda as perguntas dos rcrutadores de forma profissional e simpátca, usando apenas o contexto 
+#                   fornecido abaixo.
+     
+#                   INFORMAÇÃO TEMPORAL IMPORTANTE: A data de hoje é {today}. Compare essa data com as presentes nos contextos para utilizar o tempo
+#                   verbal correto.
+     
+#                   CONTEXTO DO CURRÍCULO: {context}. 
+     
+#                   Se a resposta não existir no contexto, diga que não sabe."""),
+#     ("human", "{user_input}")
+# ])
+
+# if __name__ == "__main__":
+#     ask = "Quais são as experiências do Antoniel?"
+
+#     context = retrieve(ask)
+
+#     prompt_value = template.invoke({
+#         "context": context,
+#         "user_input": ask,
+#         "today": today
+#     })
+
+#     response = model.invoke(prompt_value)
+
+#     print(response)
+#     print("="*20)
+#     print(response.content)
