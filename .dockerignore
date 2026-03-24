@@ -1,0 +1,11 @@
+*old*
+*_old.py
+
+chroma_db_old/
+__pycache__/
+
+.env
+
+venv/
+env/
+.venv/
